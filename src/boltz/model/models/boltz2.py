@@ -4,7 +4,6 @@ from typing import Any, Optional
 import numpy as np
 import torch
 import torch._dynamo
-from pytorch_lightning import Callback, LightningModule
 from torch import Tensor, nn
 from torchmetrics import MeanMetric
 
@@ -37,8 +36,14 @@ from boltz.model.optim.ema import EMA
 from boltz.model.optim.scheduler import AlphaFoldLRScheduler
 
 
-class Boltz2(LightningModule):
-    """Boltz2 model."""
+class Boltz2(nn.Module):
+    """Boltz2 model.
+
+    Note: This class previously inherited from LightningModule for training.
+    It now inherits from nn.Module for inference compatibility.
+    Training-specific methods (training_step, validation_step, etc.) are preserved
+    but will only work if used with PyTorch Lightning Trainer.
+    """
 
     def __init__(
         self,
@@ -1243,13 +1248,22 @@ class Boltz2(LightningModule):
                 self.training_args.weight_decay
             )
 
-    def configure_callbacks(self) -> list[Callback]:
+    def configure_callbacks(self) -> list:
         """Configure model callbacks.
+
+        Note: This method is only used with PyTorch Lightning training.
+        For inference, EMA weights are loaded separately via the inference loader.
 
         Returns
         -------
-        List[Callback]
+        list
             List of callbacks to be used in the model.
 
         """
-        return [EMA(self.ema_decay)] if self.use_ema else []
+        # Import here to avoid requiring pytorch_lightning for inference
+        try:
+            from boltz.model.optim.ema import EMA
+            return [EMA(self.ema_decay)] if self.use_ema else []
+        except ImportError:
+            # If Lightning is not installed, return empty list (inference mode)
+            return []
