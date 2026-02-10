@@ -168,7 +168,7 @@ def create_minimal_config():
     }
 
 
-def create_minimal_features(sequence="MADQLTEEQIAEFKEAFSLF", device="cpu"):
+def create_minimal_features(sequence="MADQLTEEQIAEFKEAFSLF", device="xpu"):
     """
     Create minimal input features for a simple protein sequence.
 
@@ -224,7 +224,7 @@ def main():
     print("=" * 80)
 
     # Set device (CPU for Intel XPU compatibility testing)
-    device = "cpu"
+    device = "xpu"
     print(f"\nDevice: {device}")
 
     # Create model configuration
