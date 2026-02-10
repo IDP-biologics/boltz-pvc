@@ -13,6 +13,13 @@ import torch
 from pathlib import Path
 from typing import List, Dict, Any
 
+# Intel Extension for PyTorch (for XPU support)
+try:
+    import intel_extension_for_pytorch as ipex
+    IPEX_AVAILABLE = True
+except ImportError:
+    IPEX_AVAILABLE = False
+
 from boltz.inference import load_model, BoltzInferenceRunner
 from torch.utils.data import DataLoader
 
@@ -24,17 +31,29 @@ class CustomBoltzPipeline:
         self,
         checkpoint_path: str,
         model_type: str = "boltz1",
-        device: str = "cuda",
+        device: str = None,
     ):
         """
         Initialize the pipeline.
-        
+
         Args:
             checkpoint_path: Path to model checkpoint
             model_type: "boltz1" or "boltz2"
-            device: Device to use
+            device: Device to use (auto-detected if None)
         """
-        self.device = device if torch.cuda.is_available() else "cpu"
+        # Auto-detect device if not specified
+        if device is None:
+            if IPEX_AVAILABLE and hasattr(torch, 'xpu') and torch.xpu.is_available():
+                self.device = "xpu"
+                print(f"Using Intel XPU with IPEX version {ipex.__version__}")
+            elif torch.cuda.is_available():
+                self.device = "cuda"
+                print("Using CUDA GPU")
+            else:
+                self.device = "cpu"
+                print("Using CPU")
+        else:
+            self.device = device
         
         # Load model once
         print(f"Loading {model_type} model...")

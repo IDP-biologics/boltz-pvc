@@ -31,7 +31,7 @@ from boltz.model.modules.trunkv2 import (
     TemplateModule,
     TemplateV2Module,
 )
-from boltz.model.optim.ema import EMA
+# EMA import moved to configure_callbacks() to avoid requiring Lightning for inference
 from boltz.model.optim.scheduler import AlphaFoldLRScheduler
 
 

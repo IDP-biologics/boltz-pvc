@@ -9,6 +9,13 @@ from torch import nn
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
+# Intel Extension for PyTorch (for XPU support)
+try:
+    import intel_extension_for_pytorch as ipex
+    IPEX_AVAILABLE = True
+except ImportError:
+    IPEX_AVAILABLE = False
+
 
 class BoltzInferenceRunner:
     """Vanilla PyTorch inference runner for Boltz models."""
@@ -31,9 +38,20 @@ class BoltzInferenceRunner:
         
         # Auto-detect device if not provided
         if device is None:
-            device = "cuda" if torch.cuda.is_available() else "cpu"
+            if IPEX_AVAILABLE and hasattr(torch, 'xpu') and torch.xpu.is_available():
+                device = "xpu"
+            elif torch.cuda.is_available():
+                device = "cuda"
+            else:
+                device = "cpu"
         self.device = device
-        
+
+        # Log device info
+        if device == "xpu" and IPEX_AVAILABLE:
+            print(f"Using Intel XPU with IPEX version {ipex.__version__}")
+        elif device == "xpu" and not IPEX_AVAILABLE:
+            print("WARNING: XPU device requested but Intel Extension for PyTorch not available!")
+
         # Move model to device
         self.model = self.model.to(self.device)
         self.model.eval()

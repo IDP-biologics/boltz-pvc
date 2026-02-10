@@ -11,6 +11,13 @@ from pathlib import Path
 import torch
 from torch.utils.data import DataLoader
 
+# Intel Extension for PyTorch (for XPU support)
+try:
+    import intel_extension_for_pytorch as ipex
+    IPEX_AVAILABLE = True
+except ImportError:
+    IPEX_AVAILABLE = False
+
 from boltz.data.module.inference import BoltzInferenceDataset
 from boltz.data.module.inferencev2 import Boltz2InferenceDataset
 from boltz.inference import BoltzInferenceRunner, load_model
@@ -93,11 +100,16 @@ def main():
     )
 
     args = parser.parse_args()
-    
+
     # Auto-detect device
     if args.device is None:
-        args.device = "cuda" if torch.cuda.is_available() else "cpu"
-    
+        if IPEX_AVAILABLE and hasattr(torch, 'xpu') and torch.xpu.is_available():
+            args.device = "xpu"
+        elif torch.cuda.is_available():
+            args.device = "cuda"
+        else:
+            args.device = "cpu"
+
     print("=" * 80)
     print("Boltz Vanilla PyTorch Inference")
     print("=" * 80)
@@ -106,6 +118,10 @@ def main():
     print(f"Input: {args.input}")
     print(f"Output: {args.output}")
     print(f"Device: {args.device}")
+    if args.device == "xpu" and IPEX_AVAILABLE:
+        print(f"Intel Extension for PyTorch: {ipex.__version__}")
+    elif args.device == "xpu" and not IPEX_AVAILABLE:
+        print("WARNING: XPU device requested but Intel Extension for PyTorch not available!")
     print(f"Recycling steps: {args.recycling_steps}")
     print(f"Sampling steps: {args.sampling_steps}")
     print(f"Diffusion samples: {args.diffusion_samples}")

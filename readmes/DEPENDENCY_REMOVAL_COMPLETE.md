@@ -8,6 +8,7 @@ Boltz model inference is now **completely free** of external training framework 
 - ❌ **No CUDA dependencies** - Works on CPU, Intel XPUs, and all GPUs
 - ❌ **No FairScale** - Custom checkpoint wrapper implementation
 - ❌ **No torchmetrics** - Pure PyTorch MeanMetric implementation
+- ✅ **Intel XPU Support** - Full IPEX integration with auto-detection
 
 ## What Was Removed
 
@@ -38,12 +39,24 @@ Boltz model inference is now **completely free** of external training framework 
 **Documentation:**
 - `FAIRSCALE_REMOVAL_SUMMARY.md`
 
-### 4. torchmetrics (NEW - Just Removed)
+### 4. torchmetrics (Removed)
 **Files Modified:**
 - `src/boltz/model/models/boltz2.py` - Removed torchmetrics import, added pure PyTorch MeanMetric
 
 **Documentation:**
 - `TORCHMETRICS_REMOVAL.md`
+
+### 5. Intel XPU Support (NEW - Just Added)
+**Files Modified:**
+- `src/boltz/inference/loader.py` - Added IPEX import and XPU detection
+- `src/boltz/inference/runner.py` - Added IPEX import and auto-detection
+- `tests/test_boltz_from_scratch.py` - Added IPEX support
+- `tests/example_simple_inference.py` - Added IPEX support
+- `tests/test_vanilla_inference.py` - Added IPEX support
+- `tests/example_custom_pipeline.py` - Added IPEX support
+
+**Documentation:**
+- `IPEX_INTEGRATION_SUMMARY.md`
 
 ---
 
@@ -231,6 +244,7 @@ boltz-pvc/
 | **FairScale** | Required | Not needed | ✅ Completely removed |
 | **torchmetrics** | Required | Not needed | ✅ Completely removed |
 | **CUDA (cuEquivariance)** | Optional | Optional | ✅ Disabled by default |
+| **Intel XPU (IPEX)** | Not supported | Supported | ✅ Auto-detected |
 | **Flash Attention** | Not used | Not used | ✅ Never required |
 | **Triton** | Not used | Not used | ✅ Never required |
 
@@ -241,17 +255,20 @@ boltz-pvc/
 1. **`FAIRSCALE_REMOVAL_SUMMARY.md`** - FairScale removal details
 2. **`TORCHMETRICS_REMOVAL.md`** - torchmetrics removal details
 3. **`LIGHTNING_REMOVAL_BOLTZ2_FIX.md`** - Lightning removal from Boltz2
-4. **`VANILLA_INFERENCE_README.md`** - Lightning-free inference guide
-5. **`CUDA_DEPENDENCIES_ANALYSIS.md`** - CUDA dependency analysis
-6. **`INTEL_XPU_INFERENCE_SUMMARY.md`** - Complete Intel XPU guide
-7. **`FROM_SCRATCH_TEST_README.md`** - Test script documentation
-8. **`IMPLEMENTATION_SUMMARY.md`** - Technical implementation details
-9. **`AURORA_INSTALLATION.md`** - Aurora HPC installation guide
-10. **`PYPROJECT_CHANGES_SUMMARY.md`** - Dependency restructuring details
+4. **`IPEX_INTEGRATION_SUMMARY.md`** - Intel XPU/IPEX integration (NEW!)
+5. **`VANILLA_INFERENCE_README.md`** - Lightning-free inference guide
+6. **`CUDA_DEPENDENCIES_ANALYSIS.md`** - CUDA dependency analysis
+7. **`INTEL_XPU_INFERENCE_SUMMARY.md`** - Complete Intel XPU guide
+8. **`FROM_SCRATCH_TEST_README.md`** - Test script documentation
+9. **`IMPLEMENTATION_SUMMARY.md`** - Technical implementation details
+10. **`AURORA_INSTALLATION.md`** - Aurora HPC installation guide
+11. **`PYPROJECT_CHANGES_SUMMARY.md`** - Dependency restructuring details
 
 ---
 
 **Result:** Boltz inference is now **100% dependency-free** for Lightning, FairScale, torchmetrics, and CUDA! 🎉
+
+**Plus:** Full Intel XPU support with automatic IPEX detection for Aurora deployment! 🚀
 
 Ready for deployment on Intel XPUs, CPUs, and any PyTorch-supported hardware.
 

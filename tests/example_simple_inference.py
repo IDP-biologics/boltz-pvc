@@ -8,6 +8,13 @@ PyTorch Lightning or the command-line interface.
 import torch
 from pathlib import Path
 
+# Intel Extension for PyTorch (for XPU support)
+try:
+    import intel_extension_for_pytorch as ipex
+    IPEX_AVAILABLE = True
+except ImportError:
+    IPEX_AVAILABLE = False
+
 # Import the vanilla PyTorch inference utilities
 from boltz.inference import load_model, BoltzInferenceRunner
 from boltz.data.module.inference import BoltzInferenceDataset
@@ -34,9 +41,18 @@ def run_simple_inference():
     
     # Model type: "boltz1" or "boltz2"
     model_type = "boltz1"
-    
-    # Device: "cuda" or "cpu"
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+
+    # Device: "xpu" (Intel XPU), "cuda" (NVIDIA GPU), or "cpu"
+    # Auto-detect available device
+    if IPEX_AVAILABLE and hasattr(torch, 'xpu') and torch.xpu.is_available():
+        device = "xpu"
+        print(f"Using Intel XPU with IPEX version {ipex.__version__}")
+    elif torch.cuda.is_available():
+        device = "cuda"
+        print("Using CUDA GPU")
+    else:
+        device = "cpu"
+        print("Using CPU")
     
     # Inference parameters
     recycling_steps = 3

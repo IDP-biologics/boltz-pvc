@@ -14,6 +14,13 @@ import torch
 import torch.nn as nn
 from dataclasses import asdict
 
+# Intel Extension for PyTorch (for XPU support)
+try:
+    import intel_extension_for_pytorch as ipex
+    IPEX_AVAILABLE = True
+except ImportError:
+    IPEX_AVAILABLE = False
+
 # Import Boltz model and configuration
 from src.boltz.model.models.boltz1 import Boltz1
 from src.boltz.main import (
@@ -226,6 +233,12 @@ def main():
     # Set device (CPU for Intel XPU compatibility testing)
     device = "xpu"
     print(f"\nDevice: {device}")
+    if device == "xpu":
+        if IPEX_AVAILABLE:
+            print(f"  - Intel Extension for PyTorch: Available (version {ipex.__version__})")
+        else:
+            print("  - WARNING: Intel Extension for PyTorch not available!")
+            print("  - Install with: pip install intel-extension-for-pytorch")
 
     # Create model configuration
     print("\n[1/4] Creating model configuration...")

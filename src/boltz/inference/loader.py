@@ -6,6 +6,13 @@ from typing import Optional, Union
 import torch
 from torch import nn
 
+# Intel Extension for PyTorch (for XPU support)
+try:
+    import intel_extension_for_pytorch as ipex
+    IPEX_AVAILABLE = True
+except ImportError:
+    IPEX_AVAILABLE = False
+
 from boltz.model.models.boltz1 import Boltz1
 from boltz.model.models.boltz2 import Boltz2
 from boltz.model.modules.utils import ExponentialMovingAverage
@@ -65,6 +72,10 @@ def load_model(
     # Initialize model
     print(f"Initializing {model_class} model...")
     print(f"  use_kernels: {use_kernels}")
+    if device == "xpu" and IPEX_AVAILABLE:
+        print(f"  Intel Extension for PyTorch: Available (version {ipex.__version__})")
+    elif device == "xpu" and not IPEX_AVAILABLE:
+        print("  WARNING: Intel Extension for PyTorch not available for XPU device!")
     model = model_cls(**hparams)
     
     # Load state dict
