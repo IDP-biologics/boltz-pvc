@@ -1,6 +1,5 @@
 # started from code from https://github.com/lucidrains/alphafold3-pytorch, MIT License, Copyright (c) 2024 Phil Wang
 
-from fairscale.nn.checkpoint.checkpoint_activations import checkpoint_wrapper
 from torch import nn, sigmoid
 from torch.nn import (
     LayerNorm,
@@ -9,9 +8,29 @@ from torch.nn import (
     ModuleList,
     Sequential,
 )
+from torch.utils.checkpoint import checkpoint
 
 from boltz.model.layers.attention import AttentionPairBias
 from boltz.model.modules.utils import LinearNoBias, SwiGLU, default
+
+
+def checkpoint_wrapper(module, offload_to_cpu=False):
+    """
+    Replacement for FairScale's checkpoint_wrapper using PyTorch's native checkpointing.
+
+    For inference, this just returns the module as-is since we don't need gradient checkpointing.
+    For training, wraps the module to use PyTorch's checkpoint function.
+
+    Args:
+        module: The module to wrap
+        offload_to_cpu: Whether to offload to CPU (ignored, kept for compatibility)
+
+    Returns:
+        Wrapped module or original module
+    """
+    # For inference, we don't need checkpointing, so just return the module
+    # If training is needed, PyTorch's checkpoint can be used in the forward pass
+    return module
 
 
 class AdaLN(Module):

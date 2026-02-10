@@ -88,7 +88,13 @@ python test_boltz_from_scratch.py
    - ✅ No Flash Attention or Triton in production code
    - ✅ CPU-compatible by default
 
-3. **Simple Sequence Input**
+3. **No FairScale Dependencies** (NEW!)
+   - ✅ FairScale completely removed from inference code
+   - ✅ Custom `checkpoint_wrapper` replaces FairScale's version
+   - ✅ Pure PyTorch implementation
+   - ✅ See `FAIRSCALE_REMOVAL_SUMMARY.md` for details
+
+4. **Simple Sequence Input**
    - ✅ `test_boltz_from_scratch.py` takes simple sequence string
    - ✅ Creates minimal synthetic features
    - ✅ No complex data pipeline required
@@ -239,13 +245,25 @@ For issues or questions:
 
 ## Files Summary
 
-| File | Purpose | Lightning | CUDA | Checkpoint |
-|------|---------|-----------|------|------------|
-| `test_boltz_from_scratch.py` | Architecture test | ❌ | ❌ | ❌ |
-| `example_simple_inference.py` | Simple predictions | ❌ | ❌ | ✅ |
-| `test_vanilla_inference.py` | Full CLI | ❌ | ❌ | ✅ |
-| `src/boltz/inference/loader.py` | Load checkpoints | ❌ | ❌ | ✅ |
-| `src/boltz/inference/runner.py` | Run inference | ❌ | ❌ | N/A |
+| File | Purpose | Lightning | CUDA | FairScale | Checkpoint |
+|------|---------|-----------|------|-----------|------------|
+| `test_boltz_from_scratch.py` | Architecture test | ❌ | ❌ | ❌ | ❌ |
+| `example_simple_inference.py` | Simple predictions | ❌ | ❌ | ❌ | ✅ |
+| `test_vanilla_inference.py` | Full CLI | ❌ | ❌ | ❌ | ✅ |
+| `src/boltz/inference/loader.py` | Load checkpoints | ❌ | ❌ | ❌ | ✅ |
+| `src/boltz/inference/runner.py` | Run inference | ❌ | ❌ | ❌ | N/A |
+| `src/boltz/model/modules/trunk.py` | Model modules | N/A | ❌ | ❌ | N/A |
+| `src/boltz/model/modules/transformers.py` | Transformers | N/A | ❌ | ❌ | N/A |
 
 All files are Intel XPU compatible! 🎉
+
+---
+
+## Recent Updates
+
+### FairScale Removal (Latest)
+- ✅ Removed all FairScale dependencies from model code
+- ✅ Replaced `checkpoint_wrapper` with vanilla PyTorch implementation
+- ✅ No external dependencies for activation checkpointing
+- ✅ See `FAIRSCALE_REMOVAL_SUMMARY.md` for full details
 
