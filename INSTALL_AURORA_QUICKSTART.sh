@@ -11,11 +11,12 @@ echo ""
 
 # Step 1: Load Aurora's frameworks module
 echo "[1/4] Loading Aurora frameworks module..."
-module load frameworks/2024.2 || {
+module load frameworks || {
     echo "Warning: Could not load frameworks module. Adjust version as needed."
     echo "Available modules:"
     module avail frameworks
 }
+source /lus/flare/projects/FoundEpidem/avasan/envs/boltz_env/bin/activate
 echo ""
 
 # Step 2: Verify PyTorch and NumPy are available
@@ -32,26 +33,26 @@ echo ""
 
 # Step 3: Install Boltz without dependencies
 echo "[3/4] Installing Boltz (without framework dependencies)..."
-pip install -e . --no-deps
+#uv pip install -e . --no-deps
 echo ""
 
 # Step 4: Install Boltz-specific dependencies
 echo "[4/4] Installing Boltz-specific packages..."
-pip install \
-    hydra-core==1.3.2 \
-    rdkit \
-    dm-tree \
-    requests \
-    types-requests \
-    einops \
-    einx \
-    mashumaro \
-    modelcif \
-    click \
-    pyyaml \
-    biopython \
-    gemmi \
-    chembl_structure_pipeline
+#pip install \
+#    hydra-core==1.3.2 \
+#    rdkit \
+#    dm-tree \
+#    requests \
+#    types-requests \
+#    einops \
+#    einx \
+#    mashumaro \
+#    modelcif \
+#    click \
+#    pyyaml \
+#    biopython \
+#    gemmi \
+#    chembl_structure_pipeline
 echo ""
 
 # Verification
