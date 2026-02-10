@@ -5,7 +5,6 @@ import numpy as np
 import torch
 import torch._dynamo
 from torch import Tensor, nn
-from torchmetrics import MeanMetric
 
 import boltz.model.layers.initialize as init
 from boltz.data import const
@@ -34,6 +33,46 @@ from boltz.model.modules.trunkv2 import (
 )
 from boltz.model.optim.ema import EMA
 from boltz.model.optim.scheduler import AlphaFoldLRScheduler
+
+
+class MeanMetric(nn.Module):
+    """Simple replacement for torchmetrics.MeanMetric using pure PyTorch.
+
+    Tracks the running mean of values added via update().
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.register_buffer('sum', torch.tensor(0.0))
+        self.register_buffer('count', torch.tensor(0))
+
+    def update(self, value: Tensor) -> None:
+        """Add a value to the running mean.
+
+        Args:
+            value: Scalar tensor to add
+        """
+        self.sum += value.detach()
+        self.count += 1
+
+    def compute(self) -> Tensor:
+        """Compute the mean of all values added.
+
+        Returns:
+            Mean value as a scalar tensor
+        """
+        if self.count == 0:
+            return torch.tensor(0.0, device=self.sum.device)
+        return self.sum / self.count
+
+    def reset(self) -> None:
+        """Reset the metric to initial state."""
+        self.sum.zero_()
+        self.count.zero_()
+
+    def forward(self) -> Tensor:
+        """Forward pass returns the computed mean (for logging compatibility)."""
+        return self.compute()
 
 
 class Boltz2(nn.Module):

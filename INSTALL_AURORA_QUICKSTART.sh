@@ -61,14 +61,18 @@ echo "=========================================="
 echo ""
 
 echo "Checking Boltz installation..."
-python -c "import boltz; print('  ✓ Boltz imported successfully')" || {
+python -c "import sys; sys.path.insert(0, 'src'); import boltz; print('  ✓ Boltz imported successfully')" || {
     echo "  ✗ Boltz import failed!"
     exit 1
 }
 
 echo "Checking inference module..."
-python -c "from boltz.inference import load_model; print('  ✓ Inference module OK')" || {
+python -c "import sys; sys.path.insert(0, 'src'); from boltz.inference import load_model; print('  ✓ Inference module OK')" || {
     echo "  ✗ Inference module import failed!"
+    echo ""
+    echo "If you see 'ModuleNotFoundError: No module named pytorch_lightning':"
+    echo "  This means the Lightning removal fix didn't work properly."
+    echo "  Please check that boltz2.py has been updated correctly."
     exit 1
 }
 

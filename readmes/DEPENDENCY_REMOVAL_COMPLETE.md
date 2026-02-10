@@ -7,6 +7,7 @@ Boltz model inference is now **completely free** of external training framework 
 - ❌ **No PyTorch Lightning** - Pure vanilla PyTorch
 - ❌ **No CUDA dependencies** - Works on CPU, Intel XPUs, and all GPUs
 - ❌ **No FairScale** - Custom checkpoint wrapper implementation
+- ❌ **No torchmetrics** - Pure PyTorch MeanMetric implementation
 
 ## What Was Removed
 
@@ -29,13 +30,20 @@ Boltz model inference is now **completely free** of external training framework 
 **Documentation:**
 - `CUDA_DEPENDENCIES_ANALYSIS.md`
 
-### 3. FairScale (NEW - Just Removed)
+### 3. FairScale (Removed)
 **Files Modified:**
 - `src/boltz/model/modules/trunk.py` - Removed FairScale import, added custom wrapper
 - `src/boltz/model/modules/transformers.py` - Removed FairScale import, added custom wrapper
 
 **Documentation:**
 - `FAIRSCALE_REMOVAL_SUMMARY.md`
+
+### 4. torchmetrics (NEW - Just Removed)
+**Files Modified:**
+- `src/boltz/model/models/boltz2.py` - Removed torchmetrics import, added pure PyTorch MeanMetric
+
+**Documentation:**
+- `TORCHMETRICS_REMOVAL.md`
 
 ---
 
@@ -221,6 +229,7 @@ boltz-pvc/
 |-----------|--------|-------|--------|
 | **PyTorch Lightning** | Required | Optional | ✅ Removed from inference |
 | **FairScale** | Required | Not needed | ✅ Completely removed |
+| **torchmetrics** | Required | Not needed | ✅ Completely removed |
 | **CUDA (cuEquivariance)** | Optional | Optional | ✅ Disabled by default |
 | **Flash Attention** | Not used | Not used | ✅ Never required |
 | **Triton** | Not used | Not used | ✅ Never required |
@@ -230,15 +239,19 @@ boltz-pvc/
 ## Documentation Index
 
 1. **`FAIRSCALE_REMOVAL_SUMMARY.md`** - FairScale removal details
-2. **`VANILLA_INFERENCE_README.md`** - Lightning-free inference guide
-3. **`CUDA_DEPENDENCIES_ANALYSIS.md`** - CUDA dependency analysis
-4. **`INTEL_XPU_INFERENCE_SUMMARY.md`** - Complete Intel XPU guide
-5. **`FROM_SCRATCH_TEST_README.md`** - Test script documentation
-6. **`IMPLEMENTATION_SUMMARY.md`** - Technical implementation details
+2. **`TORCHMETRICS_REMOVAL.md`** - torchmetrics removal details
+3. **`LIGHTNING_REMOVAL_BOLTZ2_FIX.md`** - Lightning removal from Boltz2
+4. **`VANILLA_INFERENCE_README.md`** - Lightning-free inference guide
+5. **`CUDA_DEPENDENCIES_ANALYSIS.md`** - CUDA dependency analysis
+6. **`INTEL_XPU_INFERENCE_SUMMARY.md`** - Complete Intel XPU guide
+7. **`FROM_SCRATCH_TEST_README.md`** - Test script documentation
+8. **`IMPLEMENTATION_SUMMARY.md`** - Technical implementation details
+9. **`AURORA_INSTALLATION.md`** - Aurora HPC installation guide
+10. **`PYPROJECT_CHANGES_SUMMARY.md`** - Dependency restructuring details
 
 ---
 
-**Result:** Boltz inference is now **100% dependency-free** for Lightning, FairScale, and CUDA! 🎉
+**Result:** Boltz inference is now **100% dependency-free** for Lightning, FairScale, torchmetrics, and CUDA! 🎉
 
 Ready for deployment on Intel XPUs, CPUs, and any PyTorch-supported hardware.
 
