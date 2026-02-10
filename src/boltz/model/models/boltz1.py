@@ -4,9 +4,7 @@ from typing import Any, Optional
 
 import torch
 import torch._dynamo
-from pytorch_lightning import LightningModule
 from torch import Tensor, nn
-from torchmetrics import MeanMetric
 
 import boltz.model.layers.initialize as init
 from boltz.data import const
@@ -37,7 +35,7 @@ from boltz.model.modules.utils import ExponentialMovingAverage
 from boltz.model.optim.scheduler import AlphaFoldLRScheduler
 
 
-class Boltz1(LightningModule):
+class Boltz1(nn.Module):
     """Boltz1 model."""
 
     def __init__(  # noqa: PLR0915, C901, PLR0912
@@ -79,56 +77,6 @@ class Boltz1(LightningModule):
         use_kernels: bool = False,
     ) -> None:
         super().__init__()
-
-        self.save_hyperparameters()
-
-        self.lddt = nn.ModuleDict()
-        self.disto_lddt = nn.ModuleDict()
-        self.complex_lddt = nn.ModuleDict()
-        if confidence_prediction:
-            self.top1_lddt = nn.ModuleDict()
-            self.iplddt_top1_lddt = nn.ModuleDict()
-            self.ipde_top1_lddt = nn.ModuleDict()
-            self.pde_top1_lddt = nn.ModuleDict()
-            self.ptm_top1_lddt = nn.ModuleDict()
-            self.iptm_top1_lddt = nn.ModuleDict()
-            self.ligand_iptm_top1_lddt = nn.ModuleDict()
-            self.protein_iptm_top1_lddt = nn.ModuleDict()
-            self.avg_lddt = nn.ModuleDict()
-            self.plddt_mae = nn.ModuleDict()
-            self.pde_mae = nn.ModuleDict()
-            self.pae_mae = nn.ModuleDict()
-        for m in const.out_types + ["pocket_ligand_protein"]:
-            self.lddt[m] = MeanMetric()
-            self.disto_lddt[m] = MeanMetric()
-            self.complex_lddt[m] = MeanMetric()
-            if confidence_prediction:
-                self.top1_lddt[m] = MeanMetric()
-                self.iplddt_top1_lddt[m] = MeanMetric()
-                self.ipde_top1_lddt[m] = MeanMetric()
-                self.pde_top1_lddt[m] = MeanMetric()
-                self.ptm_top1_lddt[m] = MeanMetric()
-                self.iptm_top1_lddt[m] = MeanMetric()
-                self.ligand_iptm_top1_lddt[m] = MeanMetric()
-                self.protein_iptm_top1_lddt[m] = MeanMetric()
-                self.avg_lddt[m] = MeanMetric()
-                self.pde_mae[m] = MeanMetric()
-                self.pae_mae[m] = MeanMetric()
-        for m in const.out_single_types:
-            if confidence_prediction:
-                self.plddt_mae[m] = MeanMetric()
-        self.rmsd = MeanMetric()
-        self.best_rmsd = MeanMetric()
-
-        self.train_confidence_loss_logger = MeanMetric()
-        self.train_confidence_loss_dict_logger = nn.ModuleDict()
-        for m in [
-            "plddt_loss",
-            "resolved_loss",
-            "pde_loss",
-            "pae_loss",
-        ]:
-            self.train_confidence_loss_dict_logger[m] = MeanMetric()
 
         self.ema = None
         self.use_ema = ema
